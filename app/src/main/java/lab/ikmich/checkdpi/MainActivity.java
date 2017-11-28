@@ -1,23 +1,29 @@
 package lab.ikmich.checkdpi;
 
-import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageView;
+import android.text.Html;
+import android.util.DisplayMetrics;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageView imgDpi;
+    TextView tvInfo;
+    private final static String NL = "\n";
+    private final static String BR = "<br/>";
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        setupUI();
+        setInfo();
+    }
 
-        imgDpi = (ImageView) findViewById(R.id.img_dpi);
-
-		showDpiImage(this);
-	}
+    void setupUI() {
+        tvInfo = (TextView) findViewById(R.id.tv_info);
+    }
 
 //	@Override
 //	public boolean onCreateOptionsMenu(Menu menu) {
@@ -26,24 +32,58 @@ public class MainActivity extends AppCompatActivity {
 //		return true;
 //	}
 
-	public void showDpiImage(Activity a) {
-//		if (a == null) {
-//			return;
-//		}
-//
-//		final FrameLayout root = (FrameLayout) a.findViewById(android.R.id.content);
-//		if (root == null) {
-//			return;
-//		}
-//
-//		final ImageView iv = new ImageView(a);
-//		iv.setImageResource(R.drawable.check_dpi);
-//
-//		FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT,
-//                FrameLayout.LayoutParams.WRAP_CONTENT);
-//		lp.gravity = Gravity.CENTER;
-//
-//		root.addView(iv, lp);
+    void setInfo() {
+        // Display info
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
 
-	}
+        float density = dm.density;
+        int densityDpi = dm.densityDpi;
+        int widthPixels = dm.widthPixels;
+        int heightPixels = dm.heightPixels;
+        float scaledDensity = dm.scaledDensity;
+        float xdpi = dm.xdpi;
+        float ydpi = dm.ydpi;
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("<b>density</b>: ").append(density).append(BR);
+        sb.append("<b>scaledDensity</b>: ").append(scaledDensity).append(BR);
+        sb.append("<b>xdpi</b>: ").append(xdpi).append(BR);
+        sb.append("<b>ydpi</b>: ").append(ydpi).append(BR);
+        sb.append("<b>densityDpi</b>: ").append(densityDpi).append(BR);
+        sb.append("<b>widthPixels</b>: ").append(widthPixels).append(BR);
+        sb.append("<b>heightPixels</b>: ").append(heightPixels).append(BR);
+
+        // Screen info
+        Configuration configuration = getResources().getConfiguration();
+        int screenWidthDp = configuration.screenWidthDp;
+        int screenHeightDp = configuration.screenHeightDp;
+
+        String screenType;
+
+        switch (configuration.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) {
+            case (Configuration.SCREENLAYOUT_SIZE_SMALL):
+                screenType = "SMALL";
+                break;
+            case (Configuration.SCREENLAYOUT_SIZE_NORMAL):
+                screenType = "NORMAL";
+                break;
+            case (Configuration.SCREENLAYOUT_SIZE_LARGE):
+                screenType = "LARGE";
+                break;
+            case (Configuration.SCREENLAYOUT_SIZE_XLARGE):
+                screenType = "XLARGE";
+                break;
+            default:
+                screenType = "UNKNOWN";
+                break;
+        }
+
+        sb.append("<b>screenWidthDp</b>: ").append(screenWidthDp).append(BR);
+        sb.append("<b>screenHeightDp</b>: ").append(screenHeightDp).append(BR);
+        sb.append("<b>screenType</b>: ").append(screenType).append(BR);
+
+        tvInfo.setText(Html.fromHtml(sb.toString()));
+    }
+
 }
